@@ -1,0 +1,11 @@
+# Logs
+*.log
+
+# Compiled binary 
+bin/
+obj/
+
+# Project files
+*.csproj
+*.user
+*.pfx
