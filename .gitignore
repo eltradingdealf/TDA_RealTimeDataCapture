@@ -4,6 +4,7 @@
 # Compiled binary 
 bin/
 obj/
+Service References/
 
 # Project files
 *.csproj

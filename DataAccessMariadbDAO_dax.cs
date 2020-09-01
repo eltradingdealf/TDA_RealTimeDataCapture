@@ -2,8 +2,6 @@
 using RealTimeDataCapture2.util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
 
@@ -17,21 +15,51 @@ namespace RealTimeDataCapture2.dao {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Marzo 2019
+    /// 2019
     /// </date>
-    class DataAccessMariadbDAO_nasdaq : IDataAccessDAO {
+    /// <update>
+    /// Sept 2020
+    /// </update>
+    class DataAccessMariadbDAO_dax : IDataAccessDAO {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
 
+        public void deleteTicks() {
+            log.Debug("Deleting ticks DAX in MariaDB Init");
+
+            try {
+                using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
+
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_DELETE_TICKS_ALL_DAX, conn);
+                    log.Info("Conn opened");
+
+                    cmd.Prepare();
+                    log.Info("cmd prepared");
+
+                    cmd.ExecuteNonQuery();
+                    log.Info("query executed");
+                }
+            }
+            catch (Exception ex) {
+                log.Debug("ERROR DELETING TICKS DATA IN MARIADB-DAX. " + ex.Message);
+                log.Error("ERROR DELETING TICKS DATA IN MARIADB-DAX. " + ex.Message);
+            }
+
+            log.Debug("Deleting tick DAX in MariaDB Ends");
+        }//fin deleteTicks
+
+
+
         /// <summary>
-        /// Inserta Un Tick en la Base de datos MariaDB para mercado NASDAQ
+        /// Inserta Un Tick en la Base de datos MariaDB para mercado DAX
         /// </summary>
         /// <returns>true si insert ok, false i algun fallo</returns>
         public async Task<Boolean> insertTick(Tick _tick) {
 
-            log.Debug("Inserting tick NASDAQ in MariaDB Init");
+            log.Debug("Inserting tick DAX in MariaDB Init");
 
             try {
                 Tick_dec tick = (Tick_dec)_tick;
@@ -39,7 +67,7 @@ namespace RealTimeDataCapture2.dao {
                 using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
 
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_TICK_NASDAQ, conn);
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_TICK_DAX, conn);
                     log.Info("Conn opened");
 
                     cmd.Parameters.AddWithValue("@tickdate", tick.date);
@@ -60,29 +88,29 @@ namespace RealTimeDataCapture2.dao {
                 }
             }
             catch (Exception ex) {
-                log.Debug("ERROR INSERTING TICKS DATA IN MARIADB-NASDAQ. " + ex.Message);
-                log.Error("ERROR INSERTING TICKS DATA IN MARIADB-NASDAQ. " + ex.Message);
+                log.Debug("ERROR INSERTING TICKS DATA IN MARIADB-DAX. " + ex.Message);
+                log.Error("ERROR INSERTING TICKS DATA IN MARIADB-DAX. " + ex.Message);
                 return false;
             }
 
-            log.Debug("Inserting tick NASDAQ in MariaDB Ends");
+            log.Debug("Inserting tick DAX in MariaDB Ends");
             return true;
         }//fin insertTick
 
 
 
         /// <summary>
-        /// Inserta o actualiza el registro de precios del NASDAQ.
+        /// Inserta o actualiza el registro de precios del DAX.
         /// </summary>
         /// <returns>true si insert ok, false i algun fallo</returns>
         public async Task<Boolean> updatePrices(Dictionary<String, Int32> datetimemili, Prices _prices) {
 
-            log.Debug("Updating Current NASDAQ prices Init");
+            log.Debug("Updating Current DAX prices Init");
 
             try {
                 using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_UPDATE_PRICES_NASDAQ, conn);
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_UPDATE_PRICES_DAX, conn);
                     log.Info("Conn opened");
 
                     Prices_dec prices = (Prices_dec)_prices;
@@ -101,12 +129,12 @@ namespace RealTimeDataCapture2.dao {
                 }
             }
             catch (Exception ex) {
-                log.Debug("ERROR UPDATING FIBEX PRICES IN MARIADB-NASDAQ. " + ex.Message);
-                log.Error("ERROR UPDATING FIBEX PRICES IN MARIADB-NASDAQ. " + ex.Message);
+                log.Debug("ERROR UPDATING FIBEX PRICES IN MARIADB-DAX. " + ex.Message);
+                log.Error("ERROR UPDATING FIBEX PRICES IN MARIADB-DAX. " + ex.Message);
                 return false;
             }
 
-            log.Debug("Updating Current NASDAQ prices Ends");
+            log.Debug("Updating Current DAX prices Ends");
             return true;
         }//fin updatePrices
     }//fin class

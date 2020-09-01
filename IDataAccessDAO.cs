@@ -16,6 +16,7 @@ namespace RealTimeDataCapture2.dao {
 
     interface IDataAccessDAO {
 
+        void deleteTicks();
         Task<Boolean> insertTick(Tick tick);
         Task<Boolean> updatePrices(Dictionary<String, Int32> datetimemili, Prices prices);
     }

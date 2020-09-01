@@ -17,12 +17,10 @@ namespace RealTimeDataCapture2.util {
         public const string MARIA_HOST = "Server=127.0.0.1;Uid=root;Pwd=alfredo;Database=trading_db;IgnorePrepare=true;ConnectionLifeTime=300;";
 
 
-
-        public const string SIMBOLO_STOXX50 = "010015FESXZ5"; //Eurostoxx50 Diciembre 2015
-        public const string SIMBOLO_IBEX35_CONTINUOS = "010072MFXI";
-        public const string SIMBOLO_CME_EURO_FX_JUNE2019 = "0100206EH20";
-        public const string SIMBOLO_CME_MINISP_500_JUNE2019 = "010001ESH20";
-        public const string SIMBOLO_CME_MINI_NASDAQ_JUNE2019 = "010001NQM19";
+        public const string SIMBOLO_IBEX35 = "IBEX";
+        public const string SIMBOLO_CME_EURO_FX = "EUROFX";
+        public const string SIMBOLO_CME_MINISP = "SP500";
+        public const string SIMBOLO_DAX = "DAX";
 
 
         public const int TICKS_BUFFER_SIZE = 10; 
@@ -98,16 +96,21 @@ namespace RealTimeDataCapture2.util {
                                                                 "ON DUPLICATE KEY UPDATE " +
                                                                 "ticktime=@ticktime, tickmili=@tickmili, buy_price=@bprice, sell_price=@sprice";
 
-        public const String SQL_INSERT_TICK_NASDAQ = "INSERT INTO trading_db.ticks_fnasdaq " +
-                                                "(tickdate, ticktime, tickmili, ope, trade_price, trade_vol, buy_price, sell_price) " +
-                                             "VALUES " +
-                                                "(@tickdate, @ticktime, @tickmili, @ope, @tprice, @tvol, @bprice, @sprice)";
+        public const String SQL_INSERT_TICK_DAX = "INSERT INTO trading_db.ticks_dax " +
+                                                  "(tickdate, ticktime, tickmili, ope, trade_price, trade_vol, buy_price, sell_price) " +
+                                                  "VALUES " +
+                                                  "(@tickdate, @ticktime, @tickmili, @ope, @tprice, @tvol, @bprice, @sprice)";
 
 
-        public const String SQL_INSERT_UPDATE_PRICES_NASDAQ = "INSERT INTO prices_fnasdaq " +
+        public const String SQL_INSERT_UPDATE_PRICES_DAX = "INSERT INTO prices_dax " +
                                                                 "VALUES(@tickdate, @ticktime, @tickmili, @bprice, @sprice) " +
                                                                 "ON DUPLICATE KEY UPDATE " +
                                                                 "ticktime=@ticktime, tickmili=@tickmili, buy_price=@bprice, sell_price=@sprice";
+
+        public const String SQL_DELETE_TICKS_ALL_DAX = "DELETE FROM trading_db.ticks_dax";
+        public const String SQL_DELETE_TICKS_ALL_EURO_FX = "DELETE FROM trading_db.ticks_feuro";
+        public const String SQL_DELETE_TICKS_ALL_SP500 = "DELETE FROM trading_db.ticks_fsp500";
+        public const String SQL_DELETE_TICKS_ALL_IBEX = "DELETE FROM trading_db.ticks_fibex";
 
         public const String SQL_QUERY_SESSION = "SELECT ID, SESSION_DATE, DESCRIPTION " +
                                                 "FROM dbo.M_SESSION " +
@@ -117,6 +120,11 @@ namespace RealTimeDataCapture2.util {
                                                  "(ID, SESSION_DATE) " +
                                                  "VALUES " +
                                                  "(@sesionID, @sesionDate)";
+
+        public const String QUERY_SELECT_X_MARKETS_ACTIVE = "SELECT SYMBOL, ACTIVE, MARKET, SHORT_TEXT " +
+                                                   "FROM trading_db.X_MARKETS " +
+                                                   "WHERE ACTIVE = 1 " +
+                                                   "ORDER BY MARKET ASC";
 
         public const String QUERY_SELECT_SYMBOLS = "SELECT CODE, OPERATE, ACTIVE, DESCRIPTION " +
                                                    "FROM dbo.M_SYMBOLS " + 

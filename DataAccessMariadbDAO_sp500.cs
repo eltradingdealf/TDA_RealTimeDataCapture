@@ -19,9 +19,38 @@ namespace RealTimeDataCapture2.dao {
     /// <date>
     /// Marzo 2019
     /// </date>
+    /// <update>
+    /// Sept 2020
+    /// </update>
     class DataAccessMariadbDAO_sp500 : IDataAccessDAO {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+
+        public void deleteTicks() {
+            log.Debug("Deleting ticks SP500 in MariaDB Init");
+
+            try {
+                using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
+
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_DELETE_TICKS_ALL_SP500, conn);
+                    log.Info("Conn opened");
+
+                    cmd.Prepare();
+                    log.Info("cmd prepared");
+
+                    cmd.ExecuteNonQuery();
+                    log.Info("query executed");
+                }
+            }
+            catch (Exception ex) {
+                log.Debug("ERROR DELETING TICKS DATA IN MARIADB-SP500. " + ex.Message);
+                log.Error("ERROR DELETING TICKS DATA IN MARIADB-SP500. " + ex.Message);
+            }
+
+            log.Debug("Deleting tick SP500 in MariaDB Ends");
+        }//fin deleteTicks
 
 
 

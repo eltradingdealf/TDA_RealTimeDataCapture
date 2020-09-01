@@ -22,7 +22,7 @@ namespace RealTimeDataCapture2.workers {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Marzo 2019
+    /// Sept 2020
     /// </date>
     class DatabaseStore_Process_Dec : DatabaseStore_Process_Interface {
 
@@ -32,7 +32,7 @@ namespace RealTimeDataCapture2.workers {
         private MainForm refForm;
         private readonly object pdlock = new object();
         private Boolean working = false;
-        private String market;
+        private Market market;
 
         /**
          * Constructor
@@ -44,7 +44,7 @@ namespace RealTimeDataCapture2.workers {
         /**
          * Constructor
          */
-        public DatabaseStore_Process_Dec(string _Market) {
+        public DatabaseStore_Process_Dec(Market _Market) {
             this.market = _Market;
         }
 
@@ -74,11 +74,11 @@ namespace RealTimeDataCapture2.workers {
         private void execStore() {
 
             //If List has no data, ends method
-            if (0 == TicksListSingleton.Instance.getListFiFoTicks(this.market).Count) {
+            if (0 == TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count) {
                 return;
             }
 
-            log.Debug("Gonna insert ticks Dec: " + TicksListSingleton.Instance.getListFiFoTicks(this.market).Count);
+            log.Debug("Gonna insert ticks Dec: " + TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count);
 
             try {
                 working = true;
@@ -87,12 +87,12 @@ namespace RealTimeDataCapture2.workers {
                 int insertsKOnum = 0;
 
                 Tick tickBean = null;
-                IDataAccessDAO dao = DAOFactory.Instance.getDAO(this.market);
+                IDataAccessDAO dao = DAOFactory.Instance.getDAO(this.market.short_text);
 
                 //Data Store
-                while (0 != TicksListSingleton.Instance.getListFiFoTicks(this.market).Count) {
+                while (0 != TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count) {
 
-                    Boolean hasTick = TicksListSingleton.Instance.getListFiFoTicks(this.market).TryDequeue(out tickBean);
+                    Boolean hasTick = TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).TryDequeue(out tickBean);
                     log.Debug("hasTick= " + hasTick);
                     if (false == hasTick) {
                         continue;
