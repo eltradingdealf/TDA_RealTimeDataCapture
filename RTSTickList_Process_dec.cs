@@ -18,7 +18,7 @@ namespace RealTimeDataCapture2.workers {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Marzo 2019
+    /// Sept 2020
     /// </date>
     class RTSTickList_Process_dec : RTSTickList_Interface {
 
@@ -29,7 +29,7 @@ namespace RealTimeDataCapture2.workers {
          * Referencia del Formulario llamador de la clase
          */
         private RealTimeDataCapture2.MainForm refForm;
-        private Symbol symbol;
+        private Market market;
 
         private int totalBuy = 0;
         private int totalSell = 0;
@@ -45,10 +45,10 @@ namespace RealTimeDataCapture2.workers {
         /**
          * Constructor
          */
-        public RTSTickList_Process_dec(MainForm _f, Symbol _symbol) {
+        public RTSTickList_Process_dec(MainForm _f, Market _market) {
 
             refForm = _f;
-            this.symbol = _symbol;
+            this.market = _market;
         }//constructor
 
 
@@ -76,7 +76,7 @@ namespace RealTimeDataCapture2.workers {
 
             Tick_dec tickBean = null;
             Boolean savedTick = true;
-            VCRealTimeLib.Limit limitRT = RealTimeServer_Singleton.Instance.getRealTimeInstance().GetLimit(this.symbol.code, 1); ;
+            VCRealTimeLib.Limit limitRT = RealTimeServer_Singleton.Instance.getRealTimeInstance().GetLimit(this.market.symbol, 1); ;
 
             foreach (VCRealTimeLib.Tick rtTick in arrayTicks) {
 
@@ -176,9 +176,9 @@ namespace RealTimeDataCapture2.workers {
                     tickBean.symbol = rtTick.SymbolCode;
 
                     //Add TickBean to List
-                    TicksListSingleton.Instance.getListFiFoTicks(this.symbol.code).Enqueue(tickBean);      //log.Debug("***Tick Added to List, trade");
-                    this.totalTicks++;                                                          log.Debug("***@totalTicks= " + this.totalTicks);
-                    this.totalVol += lastvol;                                                   log.Debug("***@totalVol= " + this.totalVol);
+                    TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Enqueue(tickBean);      //log.Debug("***Tick Added to List, trade");
+                    this.totalTicks++;                                                                      log.Debug("***@totalTicks= " + this.totalTicks);
+                    this.totalVol += lastvol;                                                               log.Debug("***@totalVol= " + this.totalVol);
 
                     lastPrice = 0;
                     lastvol = 0;
@@ -211,7 +211,7 @@ namespace RealTimeDataCapture2.workers {
 
             //INSERTUPDATE
             try {
-                IDataAccessDAO dao = DAOFactory.Instance.getDAO(this.symbol.code);
+                IDataAccessDAO dao = DAOFactory.Instance.getDAO(this.market.short_text);
 
                 Prices_dec p = new Prices_dec();
                 p.buyprice = this.lastBuy;
@@ -220,7 +220,7 @@ namespace RealTimeDataCapture2.workers {
                 Task<Boolean> task = dao.updatePrices(fecha_dict, p);
                 task.Wait();
 
-                log.Debug("dec prices updated: " + this.symbol.code);
+                log.Debug("dec prices updated: " + this.market.short_text);
             }
             catch (Exception ex) {
                 log.Error("Error updating prices DEC", ex);

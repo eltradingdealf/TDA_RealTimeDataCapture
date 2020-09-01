@@ -23,7 +23,7 @@ namespace RealTimeDataCapture2.workers {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Febrero 2017
+    /// Sept 2020
     /// </date>
     class StartRTSworker  {
 
@@ -31,7 +31,7 @@ namespace RealTimeDataCapture2.workers {
 
         private Thread myThread;
         private RealTimeDataCapture2.MainForm refForm;
-        private Symbol symbol = null;
+        private Market market = null;
 
 
          /**
@@ -59,8 +59,7 @@ namespace RealTimeDataCapture2.workers {
             }
             finally { 
                 myThread.Abort();
-            }
-                    
+            }                    
         }//fin actionConnectRTS
 
         
@@ -74,8 +73,8 @@ namespace RealTimeDataCapture2.workers {
                 VCRealTimeLib.RealTime realtime = new VCRealTimeLib.RealTime();
 
                 RealTimeServer_Singleton.Instance.setRealTimeServerInstance(realtime);
-                RealTimeServer_Singleton.Instance.getRealTimeInstance().RequestSymbolFeed(symbol.code, true);
-                RealTimeServer_Singleton.Instance.getRealTimeInstance().RequestFieldEx(symbol.code, 1);
+                RealTimeServer_Singleton.Instance.getRealTimeInstance().RequestSymbolFeed(market.symbol, true);
+                RealTimeServer_Singleton.Instance.getRealTimeInstance().RequestFieldEx(market.symbol, 1);
                
                 RealTimeServer_Singleton.Instance.getRealTimeInstance().TicksBufferSize = 10;
                 RealTimeServer_Singleton.Instance.getRealTimeInstance().TimerFrecuency = 1000;
@@ -86,8 +85,7 @@ namespace RealTimeDataCapture2.workers {
             }
 
             Console.WriteLine("RealTimeServer connected succesfully");
-            return true;
-                    
+            return true;                    
         }//fin startRealTime
 
 
@@ -120,7 +118,6 @@ namespace RealTimeDataCapture2.workers {
             }//while
 
             return connected;
-
         }//fin reconnRealTimeServer
 
 
@@ -129,12 +126,11 @@ namespace RealTimeDataCapture2.workers {
          * @param _t: The thread itself, provided by the form
          * @param _f: The Form reference.
          */
-        public void place(ref Thread _t, Symbol _symbol, MainForm _f) { 
+        public void place(ref Thread _t, Market _market, MainForm _f) { 
         
             myThread = _t;
             refForm = _f;
-            symbol = _symbol;
-        
+            market = _market;        
         }//fin place
 
     }//fin clase

@@ -13,7 +13,7 @@ namespace RealTimeDataCapture2.dao {
     /// Febrero 2017
     /// </date>
     /// <update>
-    /// Marzo 2019
+    /// Sept 2020
     /// </update>
     class DAOFactory {
 
@@ -24,8 +24,12 @@ namespace RealTimeDataCapture2.dao {
         /**
          * Instance of Real Time Server
          */
-        private IDataAccessDAO dao = null;      
-        
+        private IDataAccessDAO daoEuroFX = null;
+        private IDataAccessDAO daoSP500 = null;
+        private IDataAccessDAO daoDAX = null;
+        private IDataAccessDAO daoIBEX = null;
+        private IMarketsDAO marketDao = null;
+
 
         /**
         * Instance, Sigleton implementation, returns an unique instance of this class.
@@ -61,28 +65,66 @@ namespace RealTimeDataCapture2.dao {
          */
         public IDataAccessDAO getDAO(string _market) {
 
-            if (null == dao) { 
+            if (Constants.SIMBOLO_IBEX35.Equals(_market)) {
+                if (null == daoIBEX) {
+                    lock (pdlock) {
+                        if (null == daoIBEX) {
+                            daoIBEX = new DataAccessMariadbDAO_ibex();
+                        }                        
+                    }//lock
+                }//if
+
+                return daoIBEX;
+            }
+            else if (Constants.SIMBOLO_CME_MINISP.Equals(_market)) {
+                if (null == daoSP500) {
+                    lock (pdlock) {
+                        if (null == daoSP500) {
+                            daoSP500 = new DataAccessMariadbDAO_sp500();
+                        }
+                    }//lock
+                }//if
+
+                return daoSP500;
+            }
+            else if (Constants.SIMBOLO_CME_EURO_FX.Equals(_market)) {
+                if (null == daoEuroFX) {
+                    lock (pdlock) {
+                        if (null == daoEuroFX) {
+                            daoEuroFX = new DataAccessMariadbDAO_eurofx();
+                        }
+                    }//lock
+                }//if
+
+                return daoEuroFX;
+            }
+            else if (Constants.SIMBOLO_DAX.Equals(_market)) {
+                if (null == daoDAX) {
+                    lock (pdlock) {
+                        if (null == daoDAX) {
+                            daoDAX = new DataAccessMariadbDAO_dax();
+                        }
+                    }//lock
+                }//if
+
+                return daoDAX;
+            }
+            else return null;
+        }//fin getDAO
+
+
+        public IMarketsDAO getXMarketsDAO() {
+
+            if (null == marketDao) {
                 lock (pdlock) {
-                    if (null == dao) {
-                        if (Constants.SIMBOLO_IBEX35_CONTINUOS.Equals(_market)) {
-                            dao = new DataAccessMariadbDAO_ibex();
-                        }
-                        else if (Constants.SIMBOLO_CME_MINISP_500_JUNE2019.Equals(_market)) {
-                            dao = new DataAccessMariadbDAO_sp500();
-                        }
-                        else if (Constants.SIMBOLO_CME_EURO_FX_JUNE2019.Equals(_market)) {
-                            dao = new DataAccessMariadbDAO_eurofx();
-                        }
-                        else if (Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019.Equals(_market)) {
-                            dao = new DataAccessMariadbDAO_nasdaq();
-                        }
+                    if (null == marketDao) {
+                        marketDao = new DataAccessMariadbDAO_x_markets();
                     }
                 }//if  
             }//lock
-           
-            return dao;
-        
-        }//fin getDAO
+
+            return marketDao;
+        }
 
     }//fin clase
 }//fin

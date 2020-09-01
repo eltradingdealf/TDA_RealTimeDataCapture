@@ -22,6 +22,14 @@ namespace RealTimeDataCapture2.dao {
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
+        public void deleteTicks() {
+            log.Debug("Deleting ticks IBEX in MONGODB Init");
+            
+            log.Debug("Deleting tick IBEX in MONGODB Ends");
+        }//fin deleteTicks
+
+
+
         /// <summary>
         /// Inserta Un Tick en la Base de datos MongoDB para mercado Ibex-35
         /// </summary>

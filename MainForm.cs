@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using RealTimeDataCapture2.dao;
 
 /* En el Explorador de Soluciones, seleccionamos “VCRealTimeLib” dentro de “References”. 
  * En la ventana de propiedades (pulsar Alt+Enter si no la tenéis visible), ponemos la 
@@ -29,6 +30,9 @@ namespace RealTimeDataCapture2 {
     /// <date>
     /// Febrero 2017
     /// </date>
+    /// <update>
+    /// Sept 2020
+    /// </update>
     public partial class MainForm : Form {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -38,7 +42,7 @@ namespace RealTimeDataCapture2 {
         private Thread threadConnectRTS;
         private System.Timers.Timer timerStoreBBDD;
 
-        Symbol symbol = null;
+        Market market = null;
         int idSession;
 
 
@@ -68,6 +72,7 @@ namespace RealTimeDataCapture2 {
 
             log.Info("Started program VisualChart Realtime Data Capture 2");
             fillSymbolCombos();
+            deleteDatabaseData_ticks();
         }//fin FormShown_event
 
 
@@ -91,35 +96,49 @@ namespace RealTimeDataCapture2 {
          */
         private void fillSymbolCombos() {
 
-            Queue<Symbol> symbolsQu = new Queue<Symbol>();
+            Queue<Market> qMarkets = null;
+            try {
+                IMarketsDAO dao = DAOFactory.Instance.getXMarketsDAO();
 
-            Symbol s1 = new model.Symbol();
-            s1.code = Constants.SIMBOLO_IBEX35_CONTINUOS;
-            s1.description = "IBEX-35 CONTINUOUS";
+                qMarkets = dao.selectMarketList();
+                log.Debug("markets requested");
+            }
+            catch (Exception ex) {
+                log.Error("Error requesting Markets", ex);
+                throw new Exception(ex.Message);
+            }
 
-            Symbol s2 = new model.Symbol();
-            s2.code = Constants.SIMBOLO_CME_EURO_FX_JUNE2019;
-            s2.description = "EURO-FX *MARCH 2020";
-
-            Symbol s3 = new model.Symbol();
-            s3.code = Constants.SIMBOLO_CME_MINISP_500_JUNE2019;
-            s3.description = "MINI S&P 500 *MARCH 2020";
-
-            Symbol s4 = new model.Symbol();
-            s4.code = Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019;
-            s4.description = "MINI-NASDAQ 100 *JUNE 2019";
-
-
-            symbolsQu.Enqueue(s1);
-            symbolsQu.Enqueue(s2);
-            symbolsQu.Enqueue(s3);
-            symbolsQu.Enqueue(s4);
-
-            foreach (Symbol s in symbolsQu) {
-                cbSymbol.Items.Add(s);
+            foreach (Market m in qMarkets) {
+                cbSymbol.Items.Add(m);
             }
         }//fin fillSymbolCombos
 
+
+
+        private void deleteDatabaseData_ticks() {
+
+            try {
+                IDataAccessDAO dao = DAOFactory.Instance.getDAO(Constants.SIMBOLO_CME_EURO_FX);
+                dao.deleteTicks();
+                log.Debug("EUROFX ticks data deleted");
+
+                IDataAccessDAO dao2 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_CME_MINISP);
+                dao2.deleteTicks();
+                log.Debug("SP500 ticks data deleted");
+
+                IDataAccessDAO dao3 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_DAX);
+                dao3.deleteTicks();
+                log.Debug("DAX ticks data deleted");
+
+                IDataAccessDAO dao4 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_IBEX35);
+                dao4.deleteTicks();
+                log.Debug("IBEX35 ticks data deleted");
+            }
+            catch (Exception ex) {
+                log.Error("Error requesting Markets", ex);
+                throw new Exception(ex.Message);
+            }
+        }
 
 
         /*
@@ -131,16 +150,16 @@ namespace RealTimeDataCapture2 {
         */
         private void btConnectRTS_Click(object sender, EventArgs e) {
 
-            Symbol mysymbol = getSymbolFromCombo(cbSymbol);
-            if (null == mysymbol) {
+            Market myMarket = getSymbolFromCombo(cbSymbol);
+            if (null == myMarket) {
                 return;
             }
-            symbol = mysymbol;
+            market = myMarket;
 
             StartRTSworker worker = new StartRTSworker(); //Connect VC server
 
             threadConnectRTS = new Thread(new ThreadStart(worker.DoWork));
-            worker.place(ref threadConnectRTS, mysymbol, this);
+            worker.place(ref threadConnectRTS, myMarket, this);
             threadConnectRTS.Start();
         }//fin btConnectRTS_Click
 
@@ -155,18 +174,7 @@ namespace RealTimeDataCapture2 {
          */
         public void ConnectToRTSdone() {
 
-            if (Constants.SIMBOLO_IBEX35_CONTINUOS.Equals(this.symbol.code)) {
-                tickList_Process = new RTSTickList_Process_ibex(this, this.symbol);
-            }
-            else if(Constants.SIMBOLO_CME_MINISP_500_JUNE2019.Equals(this.symbol.code)) {
-                tickList_Process = new RTSTickList_Process_dec(this, this.symbol);
-            }
-            else if(Constants.SIMBOLO_CME_EURO_FX_JUNE2019.Equals(this.symbol.code)) {
-                tickList_Process = new RTSTickList_Process_dec(this, this.symbol);
-            }
-            else if(Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019.Equals(this.symbol.code)) {
-                tickList_Process = new RTSTickList_Process_dec(this, this.symbol);
-            }
+            tickList_Process = new RTSTickList_Process_dec(this, this.market);
 
             subscribeEvents();
 
@@ -219,7 +227,7 @@ namespace RealTimeDataCapture2 {
 
             try {
                 if (null != RealTimeServer_Singleton.Instance.getRealTimeInstance()) {
-                    RealTimeServer_Singleton.Instance.getRealTimeInstance().CancelSymbolFeed(symbol.code, true);
+                    RealTimeServer_Singleton.Instance.getRealTimeInstance().CancelSymbolFeed(market.symbol, true);
                     RealTimeServer_Singleton.Instance.setRealTimeServerInstance(null);
                 }
             }
@@ -245,21 +253,7 @@ namespace RealTimeDataCapture2 {
                !timerStoreBBDD.Enabled) {
 
                 DatabaseStore_Process_Interface worker = null;
-                if (Constants.SIMBOLO_IBEX35_CONTINUOS.Equals(this.symbol.code)) {
-                    worker = new DatabaseStore_Process_ibex();
-                }
-                else if(Constants.SIMBOLO_CME_MINISP_500_JUNE2019.Equals(this.symbol.code)) {
-                    worker = new DatabaseStore_Process_Dec(Constants.SIMBOLO_CME_MINISP_500_JUNE2019);
-                }
-                else if(Constants.SIMBOLO_CME_EURO_FX_JUNE2019.Equals(this.symbol.code)) {
-                    worker = new DatabaseStore_Process_Dec(Constants.SIMBOLO_CME_EURO_FX_JUNE2019);
-                }
-                else if(Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019.Equals(this.symbol.code)) {
-                    worker = new DatabaseStore_Process_Dec(Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019);
-                }
-                else {
-                    return false;
-                }
+                worker = new DatabaseStore_Process_Dec(this.market);
 
                 timerStoreBBDD = new System.Timers.Timer(Constants.HALF_A_SECOND);
                 timerStoreBBDD.Elapsed += worker.DoWork;
@@ -349,19 +343,19 @@ namespace RealTimeDataCapture2 {
 
 
 
-        private Symbol getSymbolFromCombo(ComboBox combo) {
+        private Market getSymbolFromCombo(ComboBox combo) {
 
-            Symbol symbol = null;
+            Market market = null;
 
-            Object s = combo.SelectedItem;
-            if (s is Symbol) {
-                symbol = (Symbol)s;
+            Object m = combo.SelectedItem;
+            if (m is Market) {
+                market = (Market)m;
             }
             else {
-                MessageBox.Show("Select a Symbol in the combo below", "Info", MessageBoxButtons.OK);
+                MessageBox.Show("Select a Market in the combo below", "Info", MessageBoxButtons.OK);
             }
 
-            return symbol;
+            return market;
         }//fin getSymbolFromCombo
 
 

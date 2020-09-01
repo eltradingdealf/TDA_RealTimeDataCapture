@@ -183,7 +183,7 @@ namespace RealTimeDataCapture2.workers {
                     dt = DateTime.Now;
 
                     tickBean = new Tick_ibex();
-                    tickBean.symbol = Constants.SIMBOLO_IBEX35_CONTINUOS;
+                    tickBean.symbol = Constants.SIMBOLO_IBEX35;
                     // @see https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
                     tickBean.date = int.Parse(dt.ToString("yyyyMMdd")); 
                     tickBean.time = int.Parse(dt.ToString("HHmmss"));

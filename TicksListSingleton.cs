@@ -16,7 +16,7 @@ namespace RealTimeDataCapture2.common {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Febrero 2017, Marzo 2019
+    /// Sept 2020
     /// </date>
     sealed class TicksListSingleton  {
 
@@ -27,7 +27,7 @@ namespace RealTimeDataCapture2.common {
         private ConcurrentQueue<Tick> listFiFoTicks_ibex;
         private ConcurrentQueue<Tick> listFiFoTicks_sp500;
         private ConcurrentQueue<Tick> listFiFoTicks_eurofx;
-        private ConcurrentQueue<Tick> listFiFoTicks_nasdaq;
+        private ConcurrentQueue<Tick> listFiFoTicks_dax;
 
 
 
@@ -59,7 +59,7 @@ namespace RealTimeDataCapture2.common {
             listFiFoTicks_ibex = new ConcurrentQueue<Tick>();
             listFiFoTicks_sp500 = new ConcurrentQueue<Tick>();
             listFiFoTicks_eurofx = new ConcurrentQueue<Tick>();
-            listFiFoTicks_nasdaq = new ConcurrentQueue<Tick>();
+            listFiFoTicks_dax = new ConcurrentQueue<Tick>();
         }//fin constructor
 
 
@@ -85,26 +85,23 @@ namespace RealTimeDataCapture2.common {
 
 
 
-        public ConcurrentQueue<Tick> getListFiFoTicks_nasdaq() {
+        public ConcurrentQueue<Tick> getListFiFoTicks_dax() {
 
-            return listFiFoTicks_nasdaq;
-        }//fin getListFiFoTicks_nasdaq
+            return listFiFoTicks_dax;
+        }//fin getListFiFoTicks_dax
 
 
 
         public ConcurrentQueue<Tick> getListFiFoTicks(String _market) {
 
-            if (Constants.SIMBOLO_IBEX35_CONTINUOS.Equals(_market)) {
-                return listFiFoTicks_ibex;
-            }
-            else if (Constants.SIMBOLO_CME_MINISP_500_JUNE2019.Equals(_market)) {
+            if (Constants.SIMBOLO_CME_MINISP.Equals(_market)) {
                 return listFiFoTicks_sp500;
             }
-            else if (Constants.SIMBOLO_CME_EURO_FX_JUNE2019.Equals(_market)) {
+            else if (Constants.SIMBOLO_CME_EURO_FX.Equals(_market)) {
                 return listFiFoTicks_eurofx;
             }
-            else if (Constants.SIMBOLO_CME_MINI_NASDAQ_JUNE2019.Equals(_market)) {
-                return listFiFoTicks_nasdaq;
+            else if (Constants.SIMBOLO_DAX.Equals(_market)) {
+                return listFiFoTicks_dax;
             }
             else {
                 return null;

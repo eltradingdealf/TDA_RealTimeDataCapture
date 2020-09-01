@@ -19,12 +19,41 @@ namespace RealTimeDataCapture2.dao {
     /// <date>
     /// Julio 2017
     /// </date>
+    /// <update>
+    /// Sept 2020
+    /// </update>
     class DataAccessMariadbDAO_ibex : IDataAccessDAO {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        
-        
+
+        public void deleteTicks() {
+            log.Debug("Deleting ticks IBEX in MariaDB Init");
+
+            try {
+                using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
+
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_DELETE_TICKS_ALL_IBEX, conn);
+                    log.Info("Conn opened");
+
+                    cmd.Prepare();
+                    log.Info("cmd prepared");
+
+                    cmd.ExecuteNonQuery();
+                    log.Info("query executed");
+                }
+            }
+            catch (Exception ex) {
+                log.Debug("ERROR DELETING TICKS DATA IN MARIADB-IBEX. " + ex.Message);
+                log.Error("ERROR DELETING TICKS DATA IN MARIADB-IBEX. " + ex.Message);
+            }
+
+            log.Debug("Deleting tick IBEX in MariaDB Ends");
+        }//fin deleteTicks
+
+
+
         /// <summary>
         /// Inserta Un Tick en la Base de datos MariaDB para mercado Ibex-35
         /// </summary>
