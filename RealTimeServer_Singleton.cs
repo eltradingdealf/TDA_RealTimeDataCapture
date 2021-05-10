@@ -12,6 +12,8 @@
     /// </date>
     class RealTimeServer_Singleton {
 
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private static volatile RealTimeServer_Singleton instance = null;
         private static readonly object padlock = new object();
 
@@ -26,7 +28,7 @@
         * Instance, Sigleton implementation, return an unique instance of this class.
         */
         public static RealTimeServer_Singleton Instance {
-            
+                        
              get {
                 if (null == instance) {
                     lock(padlock) {
@@ -53,7 +55,6 @@
 
 
         public VCRealTimeLib.RealTime getRealTimeInstance() {
-
             if (null != realtime) { 
                 return realtime;
             }
@@ -65,9 +66,7 @@
 
 
         public void setRealTimeServerInstance(VCRealTimeLib.RealTime _realtime) {
-        
             realtime = _realtime;
-        
         }//fin 
 
     }//fin clase

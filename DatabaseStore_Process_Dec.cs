@@ -72,13 +72,13 @@ namespace RealTimeDataCapture2.workers {
          * Browse the queue saving its data in the Database
          */
         private void execStore() {
-
+            
             //If List has no data, ends method
             if (0 == TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count) {
                 return;
             }
-
-            log.Debug("Gonna insert ticks Dec: " + TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count);
+            
+            log.Debug("execStore getListFiFoTicks: " + TicksListSingleton.Instance.getListFiFoTicks(this.market.short_text).Count);
 
             try {
                 working = true;

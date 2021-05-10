@@ -133,6 +133,10 @@ namespace RealTimeDataCapture2 {
                 IDataAccessDAO dao4 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_IBEX35);
                 dao4.deleteTicks();
                 log.Debug("IBEX35 ticks data deleted");
+
+                IDataAccessDAO dao5 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_BUND);
+                dao5.deleteTicks();
+                log.Debug("BUND ticks data deleted");
             }
             catch (Exception ex) {
                 log.Error("Error requesting Markets", ex);
@@ -189,7 +193,12 @@ namespace RealTimeDataCapture2 {
         private void subscribeEvents() {
 
             //Delegamos el evento hacia un metodo de esta clase "_IRealTimeEvents_OnNewTicks"
-            RealTimeServer_Singleton.Instance.getRealTimeInstance().OnNewTicks += new _IRealTimeEvents_OnNewTicksEventHandler(_IRealTimeEvents_OnNewTicks);
+            try {
+                RealTimeServer_Singleton.Instance.getRealTimeInstance().OnNewTicks += new _IRealTimeEvents_OnNewTicksEventHandler(this._IRealTimeEvents_OnNewTicks);
+            }
+            catch(Exception ex) {
+                log.Error("subscribeEvents", ex);
+            }
         }//fin subscribeEvents
 
 
@@ -254,7 +263,6 @@ namespace RealTimeDataCapture2 {
 
                 DatabaseStore_Process_Interface worker = null;
                 worker = new DatabaseStore_Process_Dec(this.market);
-
                 timerStoreBBDD = new System.Timers.Timer(Constants.HALF_A_SECOND);
                 timerStoreBBDD.Elapsed += worker.DoWork;
                 worker.place(ref timerStoreBBDD, this);
@@ -294,7 +302,12 @@ namespace RealTimeDataCapture2 {
          */
         private void _IRealTimeEvents_OnNewTicks(ref Array arrayTicks) {
 
-            tickList_Process.processTickList(ref arrayTicks);
+            try {
+                tickList_Process.processTickList(ref arrayTicks);
+            }
+            catch(Exception ex) {
+                log.Error("_IRealTimeEvents_OnNewTicks ", ex);
+            }
         }//fin _IRealTimeEvents_OnNewTicks
 
 

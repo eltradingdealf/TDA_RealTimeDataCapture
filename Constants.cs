@@ -21,6 +21,7 @@ namespace RealTimeDataCapture2.util {
         public const string SIMBOLO_CME_EURO_FX = "EUROFX";
         public const string SIMBOLO_CME_MINISP = "SP500";
         public const string SIMBOLO_DAX = "DAX";
+        public const string SIMBOLO_BUND = "BUND";
 
 
         public const int TICKS_BUFFER_SIZE = 10; 
@@ -40,6 +41,7 @@ namespace RealTimeDataCapture2.util {
         public const string DAO_TYPE_IBEX_MARIADB = "IBEX-MARIADB";
         public const string DAO_TYPE_SP500_MARIADB = "SP500-MARIADB";
         public const string DAO_TYPE_EURO_FX_MARIADB = "EUROFX-MARIADB";
+        public const string DAO_TYPE_BUND_MARIADB = "BUND-MARIADB";
 
         public const string MENSAJE_NOT_CONNECTED = "NOT CONNECTED";
         public const string MENSAJE_CONNECTED = "CONNECTED";
@@ -107,10 +109,21 @@ namespace RealTimeDataCapture2.util {
                                                                 "ON DUPLICATE KEY UPDATE " +
                                                                 "ticktime=@ticktime, tickmili=@tickmili, buy_price=@bprice, sell_price=@sprice";
 
+        public const String SQL_INSERT_TICK_BUND = "INSERT INTO trading_db.ticks_bund " +
+                                                  "(tickdate, ticktime, tickmili, ope, trade_price, trade_vol, buy_price, sell_price) " +
+                                                  "VALUES " +
+                                                  "(@tickdate, @ticktime, @tickmili, @ope, @tprice, @tvol, @bprice, @sprice)";
+
+        public const String SQL_INSERT_UPDATE_PRICES_BUND = "INSERT INTO prices_bund " +
+                                                                "VALUES(@tickdate, @ticktime, @tickmili, @bprice, @sprice) " +
+                                                                "ON DUPLICATE KEY UPDATE " +
+                                                                "ticktime=@ticktime, tickmili=@tickmili, buy_price=@bprice, sell_price=@sprice";
+
         public const String SQL_DELETE_TICKS_ALL_DAX = "DELETE FROM trading_db.ticks_dax";
         public const String SQL_DELETE_TICKS_ALL_EURO_FX = "DELETE FROM trading_db.ticks_feuro";
         public const String SQL_DELETE_TICKS_ALL_SP500 = "DELETE FROM trading_db.ticks_fsp500";
         public const String SQL_DELETE_TICKS_ALL_IBEX = "DELETE FROM trading_db.ticks_fibex";
+        public const String SQL_DELETE_TICKS_ALL_BUND = "DELETE FROM trading_db.ticks_bund";
 
         public const String SQL_QUERY_SESSION = "SELECT ID, SESSION_DATE, DESCRIPTION " +
                                                 "FROM dbo.M_SESSION " +
