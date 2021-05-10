@@ -28,6 +28,7 @@ namespace RealTimeDataCapture2.common {
         private ConcurrentQueue<Tick> listFiFoTicks_sp500;
         private ConcurrentQueue<Tick> listFiFoTicks_eurofx;
         private ConcurrentQueue<Tick> listFiFoTicks_dax;
+        private ConcurrentQueue<Tick> listFiFoTicks_bund;
 
 
 
@@ -60,6 +61,7 @@ namespace RealTimeDataCapture2.common {
             listFiFoTicks_sp500 = new ConcurrentQueue<Tick>();
             listFiFoTicks_eurofx = new ConcurrentQueue<Tick>();
             listFiFoTicks_dax = new ConcurrentQueue<Tick>();
+            listFiFoTicks_bund = new ConcurrentQueue<Tick>();
         }//fin constructor
 
 
@@ -91,9 +93,14 @@ namespace RealTimeDataCapture2.common {
         }//fin getListFiFoTicks_dax
 
 
+        public ConcurrentQueue<Tick> getListFiFoTicks_bund() {
+
+            return listFiFoTicks_bund;
+        }//fin getListFiFoTicks_bund
+
 
         public ConcurrentQueue<Tick> getListFiFoTicks(String _market) {
-
+            
             if (Constants.SIMBOLO_CME_MINISP.Equals(_market)) {
                 return listFiFoTicks_sp500;
             }
@@ -102,6 +109,9 @@ namespace RealTimeDataCapture2.common {
             }
             else if (Constants.SIMBOLO_DAX.Equals(_market)) {
                 return listFiFoTicks_dax;
+            }
+            else if (Constants.SIMBOLO_BUND.Equals(_market)) {
+                return listFiFoTicks_bund;
             }
             else {
                 return null;

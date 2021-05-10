@@ -64,7 +64,6 @@ namespace RealTimeDataCapture2.workers {
          * @param arrayTicks: Ticks Array provided by Real Time Server
          */
         public void processTickList(ref Array arrayTicks) {
-
             if (0 == arrayTicks.Length) {
                 return;
             }
