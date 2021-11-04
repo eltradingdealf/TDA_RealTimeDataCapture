@@ -2,11 +2,8 @@
 using RealTimeDataCapture2.util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
-
 
 namespace RealTimeDataCapture2.dao {
 
@@ -17,21 +14,21 @@ namespace RealTimeDataCapture2.dao {
     /// Alfredo Sanz
     /// </author>
     /// <date>
-    /// Mayo 2021
+    /// Nov 2021
     /// </date>
-    class DataAccessMariadbDAO_bund : IDataAccessDAO {
+    class DataAccessMariadbDAO_stoxx50 : IDataAccessDAO {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
         public void deleteTicks() {
-            log.Debug("Deleting ticks BUND in MariaDB Init");
+            log.Debug("Deleting ticks STOXX50 in MariaDB Init");
 
             try {
                 using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
 
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_DELETE_TICKS_ALL_BUND, conn);
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_DELETE_TICKS_ALL_STOXX50, conn);
                     log.Info("Conn opened");
 
                     cmd.Prepare();
@@ -42,22 +39,22 @@ namespace RealTimeDataCapture2.dao {
                 }
             }
             catch (Exception ex) {
-                log.Debug("ERROR DELETING TICKS DATA IN MARIADB-BUND. " + ex.Message);
-                log.Error("ERROR DELETING TICKS DATA IN MARIADB-BUND. " + ex.Message);
+                log.Debug("ERROR DELETING TICKS DATA IN MARIADB-STOXX50. " + ex.Message);
+                log.Error("ERROR DELETING TICKS DATA IN MARIADB-STOXX50. " + ex.Message);
             }
 
-            log.Debug("Deleting tick BUND in MariaDB Ends");
+            log.Debug("Deleting tick STOXX50 in MariaDB Ends");
         }//fin deleteTicks
 
 
 
         /// <summary>
-        /// Inserta Un Tick en la Base de datos MariaDB para mercado SP500
+        /// Inserta Un Tick en la Base de datos MariaDB para mercado STOXX50
         /// </summary>
         /// <returns>true si insert ok, false si algun fallo</returns>
         public async Task<Boolean> insertTick(Tick _tick) {
 
-            log.Debug("Inserting tick BUND in MariaDB Init");
+            log.Debug("Inserting tick STOXX50 in MariaDB Init");
 
             try {
                 Tick_dec tick = (Tick_dec)_tick;
@@ -65,7 +62,7 @@ namespace RealTimeDataCapture2.dao {
                 using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
 
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_TICK_BUND, conn);
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_TICK_STOXX50, conn);
                     log.Info("Conn opened");
 
                     cmd.Parameters.AddWithValue("@tickdate", tick.date);
@@ -86,29 +83,29 @@ namespace RealTimeDataCapture2.dao {
                 }
             }
             catch (Exception ex) {
-                log.Debug("ERROR INSERTING TICKS DATA IN MARIADB-BUND. " + ex.Message);
-                log.Error("ERROR INSERTING TICKS DATA IN MARIADB-BUND. " + ex.Message);
+                log.Debug("ERROR INSERTING TICKS DATA IN MARIADB-STOXX50. " + ex.Message);
+                log.Error("ERROR INSERTING TICKS DATA IN MARIADB-STOXX50. " + ex.Message);
                 return false;
             }
 
-            log.Debug("Inserting tick BUND in MariaDB Ends");
+            log.Debug("Inserting tick STOXX50 in MariaDB Ends");
             return true;
         }//fin insertTick
 
 
 
         /// <summary>
-        /// Inserta o actualiza el registro de precios del Bund.
+        /// Inserta o actualiza el registro de precios del STOXX50.
         /// </summary>
         /// <returns>true si insert ok, false si algun fallo</returns>
         public async Task<Boolean> updatePrices(Dictionary<String, Int32> datetimemili, Prices _prices) {
 
-            log.Debug("Updating Current BUND prices Init");
+            log.Debug("Updating Current STOXX50 prices Init");
 
             try {
                 using (MySqlConnection conn = new MySqlConnection(Constants.MARIA_HOST)) {
                     conn.Open();
-                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_UPDATE_PRICES_BUND, conn);
+                    MySqlCommand cmd = new MySqlCommand(Constants.SQL_INSERT_UPDATE_PRICES_STOXX50, conn);
                     log.Info("Conn opened");
 
                     Prices_dec prices = (Prices_dec)_prices;
@@ -127,12 +124,12 @@ namespace RealTimeDataCapture2.dao {
                 }
             }
             catch (Exception ex) {
-                log.Debug("ERROR UPDATING FIBEX PRICES IN MARIADB-BUND. " + ex.Message);
-                log.Error("ERROR UPDATING FIBEX PRICES IN MARIADB-BUND. " + ex.Message);
+                log.Debug("ERROR UPDATING FIBEX PRICES IN MARIADB-STOXX50. " + ex.Message);
+                log.Error("ERROR UPDATING FIBEX PRICES IN MARIADB-STOXX50. " + ex.Message);
                 return false;
             }
 
-            log.Debug("Updating Current BUND prices Ends");
+            log.Debug("Updating Current STOXX50 prices Ends");
             return true;
         }//fin updatePrices
     }//fin clase

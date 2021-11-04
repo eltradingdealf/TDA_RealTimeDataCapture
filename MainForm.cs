@@ -137,6 +137,10 @@ namespace RealTimeDataCapture2 {
                 IDataAccessDAO dao5 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_BUND);
                 dao5.deleteTicks();
                 log.Debug("BUND ticks data deleted");
+
+                IDataAccessDAO dao6 = DAOFactory.Instance.getDAO(Constants.SIMBOLO_STOXX50);
+                dao6.deleteTicks();
+                log.Debug("STOXX50 ticks data deleted");
             }
             catch (Exception ex) {
                 log.Error("Error requesting Markets", ex);
