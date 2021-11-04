@@ -29,6 +29,7 @@ namespace RealTimeDataCapture2.dao {
         private IDataAccessDAO daoDAX = null;
         private IDataAccessDAO daoIBEX = null;
         private IDataAccessDAO daoBUND = null;
+        private IDataAccessDAO daoSTOXX50 = null;
         private IMarketsDAO marketDao = null;
 
 
@@ -120,6 +121,17 @@ namespace RealTimeDataCapture2.dao {
                 }//if
 
                 return daoBUND;
+            }
+            else if (Constants.SIMBOLO_STOXX50.Equals(_market)) {
+                if (null == daoSTOXX50) {
+                    lock (pdlock) {
+                        if (null == daoSTOXX50) {
+                            daoSTOXX50 = new DataAccessMariadbDAO_stoxx50();
+                        }
+                    }//lock
+                }//if
+
+                return daoSTOXX50;
             }
             else return null;
         }//fin getDAO
